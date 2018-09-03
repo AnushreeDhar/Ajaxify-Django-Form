@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class='col-6 offset-md-3'>
+    <h1>Your Form</h1>
+    <form class='my-ajax-form' method='POST'
+    data-url='{{ request.build_absolute_uri|safe }}'>{% csrf_token %}
+    {{ form.as_p }}
+    <input class='btn btn-default' type='submit' value='Submit' />
+    </form>
+</div>
+
+
+
+
+  {% block javascript %}
+    <script>
+        $(document).ready(function(){
+            var $myForm = $('.my-ajax-form')
+            $myForm.submit(function(event){
+                event.preventDefault()
+                var $formData = $(this).serialize()
+                var $endpoint = $myForm.attr('data-url') || window.location.href // or set your own url
+                $.ajax({
+                    method: "POST",
+                    url: $endpoint,
+                    data: $formData,
+                    success: handleFormSuccess,
+                    error: handleFormError,
+                })
+            })
+        
+            function handleFormSuccess(data, textStatus, jqXHR){
+                console.log(data)
+                console.log(textStatus)
+                console.log(jqXHR)
+                $myForm[0].reset(); // reset form data
+            }
+        
+            function handleFormError(jqXHR, textStatus, errorThrown){
+                console.log(jqXHR)
+                console.log(textStatus)
+                console.log(errorThrown)
+            }
+        })
+    </script>
+    {% endblock javascript %}
+  </body>
+
+ 
+  {% endblock %}
+
+<!---prettify html
+  <div class="login-page">
+    
+        <div class="form">
+        <form class="register-form" method='POST'>
+            <input type="text" placeholder="name"/>
+            <input type="password" placeholder="password"/>
+            <input type="text" placeholder="email address"/>
+            <button>create</button>
+            {{ form.as_p }}
+        <input class='btn btn-default' type='submit' value='Submit' />
+            <p class="message">Already registered? <a href="#">Sign In</a></p>
+        </form>
+        <form class="login-form">
+            <input type="text" placeholder="username"/>
+            <input type="password" placeholder="password"/>
+            <button>login</button>
+            {{ form.as_p }}
+         <input class='btn btn-default' type='submit' value='Submit' />
+            <p class="message">Not registered? <a href="#">Create an account</a></p>
+        </form>
+        </div>
+    
+  </div>---->
